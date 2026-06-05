@@ -112,3 +112,168 @@ The test confirms:
 - Add automated validation checks  
 - Integrate into CI/CD pipeline  
 - Replace script with AWS Step Functions  
+
+# ✅ Step Function Testing
+
+## 📌 Objective
+
+Validate and verify the execution of the AWS Step Function workflow that triggers Lambda processing.
+
+This test ensures:
+
+- Step Function execution starts correctly ✅  
+- Lambda is invoked successfully ✅  
+- Input and output handling works ✅  
+- End-to-end workflow completes ✅  
+
+---
+
+## 📂 Test Files
+
+| File | Purpose |
+|------|--------|
+| `test_input.txt` | Sample document for testing |
+| `test_stepfn.py` | Script to trigger Step Function |
+| `stepfn_test_log.txt` | Execution logs (ignored in Git) |
+
+---
+
+## 🚀 How to Run the Test
+
+---
+
+### ✅ Step 1 — Update Step Function ARN
+
+In `test_stepfn.py`:
+
+```python
+STATE_MACHINE_ARN = "arn:aws:states:ap-south-1:599626541533:stateMachine:doc-summary-workflow"
+```
+
+---
+
+### ✅ Step 2 — Run the script
+
+```bash
+python test/test_stepfn.py
+```
+
+---
+
+## ✅ Expected Execution Flow
+
+```
+Test Script → Step Function → Lambda → Result ✅
+```
+
+---
+
+## ✅ Sample Output
+
+```
+Starting Step Function execution...
+Execution ARN: arn:...
+
+Current Status: RUNNING
+Current Status: SUCCEEDED
+
+Final Execution Result:
+{
+  "status": "SUCCEEDED",
+  ...
+}
+```
+
+---
+
+## ✅ Logging Mechanism
+
+Each test execution is logged to:
+
+```
+test/stepfn_test_log.txt
+```
+
+---
+
+### ✅ Log includes:
+
+- Timestamp  
+- Execution ARN  
+- Input payload  
+- Execution result  
+
+---
+
+### ✅ Example Log Entry
+
+```
+================================================================================
+Timestamp: 2026-06-05 23:30:12
+
+Execution ARN: arn:aws:states:...
+
+Status: SUCCEEDED
+
+Input:
+"This is a document used for testing..."
+
+Output:
+{
+  "summary": "This is a document..."
+}
+```
+
+---
+
+## ⚠️ Note
+
+The log file is excluded from version control using `.gitignore`:
+
+```
+test/stepfn_test_log.txt
+```
+
+---
+
+## ✅ Key Validation Points
+
+| Check | Expected |
+|------|----------|
+| Execution status | SUCCEEDED ✅ |
+| Lambda invoked | ✅ |
+| Input passed correctly | ✅ |
+| Output generated | ✅ |
+
+---
+
+## 🧠 Design Insight
+
+This testing approach provides:
+
+- ✅ Automated validation  
+- ✅ Repeatable test runs  
+- ✅ Local execution logs  
+- ✅ Debugging traceability  
+
+---
+
+## ✅ Conclusion
+
+The Step Function workflow is verified to:
+
+- Execute successfully ✅  
+- Integrate with Lambda correctly ✅  
+- Handle input and produce output ✅  
+
+---
+
+## 🔮 Next Step
+
+Workflow integration:
+
+```
+S3 → Step Function → Lambda ✅
+```
+
+This will replace the direct S3 → Lambda pipeline.
