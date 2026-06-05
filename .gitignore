@@ -1,0 +1,15 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+
+# Python
+venv/
+__pycache__/
+
+# Lambda package
+*.zip
+
+# OS files
+.DS_Store
+Thumbs.db
