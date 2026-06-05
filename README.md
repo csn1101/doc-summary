@@ -838,3 +838,97 @@ This orchestration pattern is widely used in:
 - Better extensibility  
 - Structured execution model  
 - Readiness for retries, branching, and error handling  
+
+## ✅ Step 6.5 — Final Orchestration (S3 → Step Function → Lambda)
+
+### 🎯 Objective
+
+Transition from direct event-driven processing to a fully orchestrated workflow using AWS Step Functions.
+
+---
+
+## ✅ Final Architecture
+
+```
+S3 Upload
+   ↓
+Lambda (Trigger Only)
+   ↓
+Step Function
+   ↓
+Lambda (Processing)
+```
+
+---
+
+## ✅ Flow Description
+
+1. File is uploaded to S3
+2. S3 triggers Lambda
+3. Lambda starts Step Function execution
+4. Step Function invokes Lambda for processing
+5. Processing result is returned
+
+---
+
+## ✅ Key Enhancements
+
+- ✅ Decoupled architecture  
+- ✅ Centralized workflow control  
+- ✅ Improved scalability  
+- ✅ Extensible pipeline  
+
+---
+
+## ✅ Testing Approach
+
+An automated test script performs:
+
+- Upload test file to S3  
+- Trigger full pipeline  
+- Track Step Function execution  
+- Log results with run tracking  
+
+---
+
+## ✅ Logging & Observability
+
+Each test run includes:
+
+- Unique run ID  
+- Execution ARN  
+- Status tracking  
+- Input/output logs  
+- Timestamped entries  
+
+Logs are stored locally at:
+
+```
+test/log/s3_upload_sfn_log.txt
+```
+
+---
+
+## ✅ Sample Execution Flow
+
+```
+START → Upload → Trigger → Execute → SUCCEEDED ✅
+```
+
+---
+
+## ✅ Outcome
+
+- Step Function orchestrates processing ✅  
+- Lambda acts as trigger + processor ✅  
+- End-to-end pipeline validated ✅  
+- Full observability implemented ✅  
+
+---
+
+## 🔮 Next Steps
+
+- CI/CD pipeline integration  
+- Retry & error handling  
+- Parallel workflows  
+- Output persistence (S3)  
