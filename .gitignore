@@ -13,3 +13,9 @@ __pycache__/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Terraform lock files
+.terraform.lock.hcl
+
+# Test output files
+test/output/
