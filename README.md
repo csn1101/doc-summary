@@ -600,3 +600,241 @@ This branching and repository setup mirrors industry-standard practices used in 
 
 ## ✅ Test Update - Pipeline Validation
 This is a test change to validate branch promotion workflow.
+
+## 🔄 Step 6 — Workflow Orchestration using Step Functions
+
+### 📌 Objective
+
+Enhance the existing event-driven pipeline by introducing **AWS Step Functions** to enable structured workflow execution, orchestration, and extensibility.
+
+This step transitions the system from:
+
+```
+S3 → Lambda
+```
+
+to a more controlled architecture:
+
+```
+Step Function → Lambda
+```
+
+---
+
+### 🧭 Key Design Principle
+
+The implementation is done incrementally to:
+
+- ✅ Avoid breaking existing functionality  
+- ✅ Introduce orchestration layer safely  
+- ✅ Maintain backward compatibility  
+
+---
+
+## ✅ Step 6.1 — Step Function IAM Role
+
+### 📌 Objective
+
+Create an IAM role that allows AWS Step Functions to assume and execute workflows.
+
+---
+
+### ✅ Implementation
+
+```hcl
+resource "aws_iam_role" "stepfn_role" {
+  name = "${var.suffix}-stepfn-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Service = "states.amazonaws.com"
+      },
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+```
+
+---
+
+### ✅ Outcome
+
+- Step Functions can assume this role  
+- Acts as the **execution identity** for workflows  
+
+---
+
+## ✅ Step 6.2 — Lambda Invocation Permission
+
+### 📌 Objective
+
+Allow Step Function to invoke the existing Lambda function.
+
+---
+
+### ✅ Implementation
+
+```hcl
+resource "aws_iam_role_policy" "stepfn_policy" {
+  role = aws_iam_role.stepfn_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Action = [
+        "lambda:InvokeFunction"
+      ],
+      Resource = aws_lambda_function.processor.arn
+    }]
+  })
+}
+```
+
+---
+
+### ✅ Outcome
+
+- Step Function can invoke Lambda  
+- Establishes **workflow → execution linkage**
+
+---
+
+## ✅ Step 6.3 — Step Function State Machine
+
+### 📌 Objective
+
+Define a workflow that invokes Lambda using a structured state machine.
+
+---
+
+### 📂 Template File
+
+```
+app/step_function.tpl.json
+```
+
+---
+
+### ✅ Template Definition
+
+```json
+{
+  "Comment": "Simple document processing workflow",
+  "StartAt": "ProcessText",
+  "States": {
+    "ProcessText": {
+      "Type": "Task",
+      "Resource": "${lambda_arn}",
+      "End": true
+    }
+  }
+}
+```
+
+---
+
+### ✅ Terraform Integration
+
+```hcl
+resource "aws_sfn_state_machine" "summary_workflow" {
+  name     = "${var.suffix}-workflow"
+  role_arn = aws_iam_role.stepfn_role.arn
+
+  definition = templatefile("${path.module}/step_function.tpl.json", {
+    lambda_arn = aws_lambda_function.processor.arn
+  })
+}
+```
+
+---
+
+### ✅ Outcome
+
+- Step Function created successfully  
+- Workflow performs:
+
+```
+Start → Invoke Lambda → End
+```
+
+---
+
+### 🧠 Design Insight
+
+Using a `.tpl.json` template provides:
+
+- ✅ Separation of concerns (infrastructure vs workflow logic)  
+- ✅ Better readability and maintainability  
+- ✅ Easy extensibility for future workflow stages  
+- ✅ Dynamic variable injection (e.g., Lambda ARN)  
+
+---
+
+## ✅ Current Architecture (After Step 6.3)
+
+```
+Existing Flow:
+S3 → Lambda ✅ (still active)
+
+New Flow:
+Step Function → Lambda ✅ (introduced)
+```
+
+---
+
+## ⚠️ Current Limitation
+
+- Step Function currently sends default input:
+  ```
+  {}
+  ```
+
+- Lambda expects S3 event structure:
+  ```python
+  event["Records"]
+  ```
+
+👉 This mismatch prevents full execution and will be resolved next.
+
+---
+
+## ✅ Outcome Summary
+
+- ✅ Workflow orchestration layer introduced  
+- ✅ IAM role and permissions configured  
+- ✅ Step Function successfully deployed  
+- ✅ Existing event-driven pipeline remains intact  
+
+---
+
+## 🔮 Next Step
+
+### Step 6.4 — Functional Integration
+
+- Modify Lambda to support Step Function input  
+- OR pass appropriate structured input  
+- Enable end-to-end execution via Step Function  
+
+---
+
+## 🧠 Enterprise Insight
+
+This orchestration pattern is widely used in:
+
+- Data processing pipelines  
+- Document processing systems  
+- ETL workflows  
+- Microservice orchestration  
+
+---
+
+### ✅ Benefits Achieved
+
+- Improved workflow control  
+- Better extensibility  
+- Structured execution model  
+- Readiness for retries, branching, and error handling  
