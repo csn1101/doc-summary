@@ -19,3 +19,4 @@ Thumbs.db
 
 # Test output files
 test/output/
+test/log/stepfn_test_log.txt
