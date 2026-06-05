@@ -96,3 +96,33 @@ resource "aws_lambda_permission" "allow_s3" {
   principal     = "s3.amazonaws.com"
   source_arn    = aws_s3_bucket.input.arn
 }
+
+resource "aws_iam_role" "stepfn_role" {
+  name = "${var.suffix}-stepfn-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Principal = {
+        Service = "states.amazonaws.com"
+      },
+      Action = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy" "stepfn_policy" {
+  role = aws_iam_role.stepfn_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Action = [
+        "lambda:InvokeFunction"
+      ],
+      Resource = aws_lambda_function.processor.arn
+    }]
+  })
+}
