@@ -135,3 +135,18 @@ resource "aws_sfn_state_machine" "summary_workflow" {
     lambda_arn = aws_lambda_function.processor.arn
   })
 }
+
+resource "aws_iam_role_policy" "lambda_stepfn_policy" {
+  role = aws_iam_role.lambda_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Action = [
+        "states:StartExecution"
+      ],
+      Resource = aws_sfn_state_machine.summary_workflow.arn
+    }]
+  })
+}
