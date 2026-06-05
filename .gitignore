@@ -17,6 +17,10 @@ Thumbs.db
 # Terraform lock files
 .terraform.lock.hcl
 
+
 # Test output files
 test/output/
-test/log/stepfn_test_log.txt
+
+# Ignore logs only
+test/log/
+
