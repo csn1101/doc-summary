@@ -1,0 +1,1 @@
+This is a document used for testing. It contains multiple sentences. The system should summarize this into a shorter version. This verifies the pipeline.
