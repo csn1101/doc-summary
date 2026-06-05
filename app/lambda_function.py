@@ -1,31 +1,38 @@
 import json
-import boto3
-
-s3 = boto3.client("s3")
-
-def summarize(text):
-    sentences = text.split(".")
-    return ".".join(sentences[:2])  # basic summary
 
 def lambda_handler(event, context):
-    for record in event["Records"]:
+    print("Received event:", json.dumps(event))
+
+    # ✅ Case 1: S3 event trigger
+    if "Records" in event:
+        record = event["Records"][0]
         bucket = record["s3"]["bucket"]["name"]
         key = record["s3"]["object"]["key"]
 
-        response = s3.get_object(Bucket=bucket, Key=key)
-        content = response["Body"].read().decode("utf-8")
+        print(f"S3 Trigger → Bucket: {bucket}, Key: {key}")
 
-        summary = summarize(content)
+        # existing logic here
+        return {
+            "statusCode": 200,
+            "body": "Processed via S3 trigger"
+        }
 
-        output_bucket = bucket.replace("input", "output")
+    # ✅ Case 2: Step Function input
+    elif "input_text" in event:
+        input_text = event["input_text"]
 
-        s3.put_object(
-            Bucket=output_bucket,
-            Key=key,
-            Body=summary
-        )
+        print(f"Step Function Trigger → Input: {input_text}")
 
-    return {
-        "statusCode": 200,
-        "body": json.dumps("Processed successfully")
-    }
+        # simulate processing (replace with your logic)
+        summary = input_text[:50]
+
+        return {
+            "statusCode": 200,
+            "summary": summary
+        }
+
+    else:
+        return {
+            "statusCode": 400,
+            "error": "Invalid input format"
+        }
