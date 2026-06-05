@@ -453,3 +453,147 @@ This architecture reflects real-world production patterns used in:
 - Introduce environment-based deployment (Dev/QA/Prod)  
 - Implement CI/CD using GitHub Actions  
 
+## 🗂️ Repository Setup & Branching Strategy
+
+### 📌 Objective
+
+The objective of this step is to establish a structured **version control system** using Git and GitHub, enabling controlled and systematic promotion of infrastructure and application changes across environments.
+
+This aligns the project with **enterprise DevOps practices**, ensuring maintainability, traceability, and safe deployments.
+
+---
+
+### 🧭 Branching Strategy
+
+The repository follows a **multi-branch environment mapping strategy**:
+
+| Branch   | Environment | Purpose |
+|----------|-------------|---------|
+| main     | Production  | Stable, production-ready code |
+| release  | QA          | Testing and validation before production |
+| develop  | Dev         | Active development and experimentation |
+
+---
+
+### 🔄 Development Workflow
+
+All changes follow a controlled promotion path:
+
+```
+feature/* → develop → release → main
+```
+
+---
+
+#### ✅ Workflow Description
+
+1. **Feature Development**
+   - Developers create feature branches:
+     ```
+     feature/<feature-name>
+     ```
+
+2. **Development Integration**
+   - Feature branches are merged into:
+     ```
+     develop
+     ```
+   - Represents the **Dev environment**
+
+3. **Quality Assurance**
+   - Code is promoted to:
+     ```
+     release
+     ```
+   - Used for **QA testing and validation**
+
+4. **Production Deployment**
+   - Final changes are merged into:
+     ```
+     main
+     ```
+   - Represents the **Production environment**
+
+---
+
+### 🔐 Branch Protection (Production - main)
+
+To ensure production stability and prevent direct changes, branch protection rules are applied to the `main` branch:
+
+- ✅ Require pull request before merging  
+- ✅ Direct commits to `main` are restricted  
+- ✅ All changes must go through a pull request  
+
+---
+
+### ⚙️ Repository Configuration
+
+#### ✅ .gitignore
+
+The repository excludes unnecessary and sensitive files using `.gitignore`:
+
+```
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+
+# Python
+venv/
+__pycache__/
+
+# Build artifacts
+*.zip
+
+# Test outputs
+test/output/
+
+# OS files
+.DS_Store
+Thumbs.db
+```
+
+---
+
+### ✅ Code Organization
+
+The repository is structured into clearly defined components:
+
+```
+bootstrap/  → Backend infrastructure (S3 + DynamoDB)
+iam/        → IAM roles and permissions
+app/        → Core application (S3 + Lambda)
+test/       → Testing scripts and validation
+```
+
+---
+
+### ✅ Outcome
+
+The repository now supports:
+
+- ✅ Structured development workflow  
+- ✅ Clear environment separation (Dev, QA, Prod)  
+- ✅ Safe promotion of changes  
+- ✅ Version control and traceability  
+- ✅ Readiness for CI/CD pipeline integration  
+
+---
+
+### 🧠 Enterprise Insight
+
+This branching and repository setup mirrors industry-standard practices used in large organizations:
+
+- Controlled release cycles  
+- Environment-based deployments  
+- Pull request-based validation  
+- Separation of development and production concerns  
+
+---
+
+### 🔮 Future Enhancements
+
+- Integrate GitHub Actions for CI/CD automation  
+- Enforce approval requirements on production branch  
+- Add automated Terraform validation and plan checks  
+- Introduce version tagging and release management  
