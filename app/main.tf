@@ -126,3 +126,12 @@ resource "aws_iam_role_policy" "stepfn_policy" {
     }]
   })
 }
+
+resource "aws_sfn_state_machine" "summary_workflow" {
+  name     = "${var.suffix}-workflow"
+  role_arn = aws_iam_role.stepfn_role.arn
+
+  definition = templatefile("${path.module}/step_function.tpl.json", {
+    lambda_arn = aws_lambda_function.processor.arn
+  })
+}
