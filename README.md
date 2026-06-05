@@ -597,3 +597,6 @@ This branching and repository setup mirrors industry-standard practices used in 
 - Enforce approval requirements on production branch  
 - Add automated Terraform validation and plan checks  
 - Introduce version tagging and release management  
+
+## ✅ Test Update - Pipeline Validation
+This is a test change to validate branch promotion workflow.
