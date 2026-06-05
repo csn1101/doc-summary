@@ -1,0 +1,11 @@
+{
+  "Comment": "Simple document processing workflow",
+  "StartAt": "ProcessText",
+  "States": {
+    "ProcessText": {
+      "Type": "Task",
+      "Resource": "${lambda_arn}",
+      "End": true
+    }
+  }
+}
