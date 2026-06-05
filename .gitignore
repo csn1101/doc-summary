@@ -19,3 +19,5 @@ Thumbs.db
 
 # Test output files
 test/output/
+test/input/
+test/log/
