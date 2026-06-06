@@ -5,6 +5,7 @@
 
 # Python
 venv/
+venva/
 __pycache__/
 
 # Lambda package
