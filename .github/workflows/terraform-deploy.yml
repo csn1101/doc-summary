@@ -26,18 +26,25 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
+      
+      # ✅ Step 4: Package Lambda
+      - name: Package Lambda
+        working-directory: app
+        run: |
+          zip -r lambda.zip lambda_function.py
 
-      # ✅ Step 4: Terraform Init
+
+      # ✅ Step 5: Terraform Init
       - name: Terraform Init
         working-directory: app
         run: terraform init
 
-      # ✅ Step 5: Terraform Plan
+      # ✅ Step 6: Terraform Plan
       - name: Terraform Plan
         working-directory: app
         run: terraform plan
 
-      # ✅ Step 6: Terraform Apply
+      # ✅ Step 7: Terraform Apply
       - name: Terraform Apply
         working-directory: app
         run: terraform apply -auto-approve
