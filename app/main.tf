@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket = "599626541533-ap-south-1-doc-summary-tf-state"
-    key    = "terraform/state.tfstate"
+    key    = "env/${var.environment}/terraform.tfstate"
     region = "ap-south-1"
   }
 }
@@ -9,6 +9,17 @@ terraform {
 provider "aws" {
   region = var.region
 }
+
+
+# ✅ Variables
+variable "region" {
+  default = "ap-south-1"
+}
+
+variable "environment" {
+  description = "Environment name (dev/qa/prod)"
+}
+
 
 data "aws_caller_identity" "current" {}
 

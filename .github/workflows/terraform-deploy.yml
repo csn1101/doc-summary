@@ -3,48 +3,72 @@ name: Terraform CI/CD
 on:
   push:
     branches:
+      - develop
+      - release
       - main
 
 jobs:
   terraform:
-    name: Deploy to AWS
+    name: Deploy Infrastructure
     runs-on: ubuntu-latest
 
     steps:
-      # ✅ Step 1: Checkout repo
+      # ✅ Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # ✅ Step 2: Setup Terraform
+      # ✅ Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
-      # ✅ Step 3: Configure AWS credentials
+      # ✅ Configure AWS credentials
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
-      
-      # ✅ Step 4: Package Lambda
+
+      # ✅ Detect environment based on branch
+      - name: Set Environment
+        id: env
+        run: |
+          echo "Detecting branch..."
+
+          if [[ "${GITHUB_REF}" == "refs/heads/develop" ]]; then
+            echo "env=dev" >> $GITHUB_OUTPUT
+          elif [[ "${GITHUB_REF}" == "refs/heads/release" ]]; then
+            echo "env=qa" >> $GITHUB_OUTPUT
+          elif [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+            echo "env=prod" >> $GITHUB_OUTPUT
+          else
+            echo "Unknown branch"
+            exit 1
+          fi
+
+      # ✅ Package Lambda
       - name: Package Lambda
         working-directory: app
         run: |
           zip -r lambda.zip lambda_function.py
 
-
-      # ✅ Step 5: Terraform Init
+      # ✅ Terraform Init with environment-specific backend
       - name: Terraform Init
         working-directory: app
-        run: terraform init
+        run: |
+          terraform init \
+            -backend-config="key=env/${{ steps.env.outputs.env }}/terraform.tfstate"
 
-      # ✅ Step 6: Terraform Plan
+      # ✅ Terraform Plan
       - name: Terraform Plan
         working-directory: app
-        run: terraform plan
+        run: |
+          terraform plan \
+            -var-file="env/${{ steps.env.outputs.env }}.tfvars"
 
-      # ✅ Step 7: Terraform Apply
+      # ✅ Terraform Apply
       - name: Terraform Apply
         working-directory: app
-        run: terraform apply -auto-approve
+        run: |
+          terraform apply -auto-approve \
+            -var-file="env/${{ steps.env.outputs.env }}.tfvars"
