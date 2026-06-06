@@ -1,7 +1,8 @@
 variable "region" {
-  default = "ap-south-1"
+  description = "AWS region"
+  default     = "ap-south-1"
 }
 
-variable "suffix" {
-  default = "doc-summary"
+variable "environment" {
+  description = "Environment (dev/qa/prod)"
 }
