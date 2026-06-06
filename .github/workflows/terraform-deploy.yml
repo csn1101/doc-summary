@@ -52,7 +52,7 @@ jobs:
         run: |
           zip -r lambda.zip lambda_function.py
 
-      # ✅ Terraform Init with environment-specific backend
+      # ✅ Terraform Init with env-specific state
       - name: Terraform Init
         working-directory: app
         run: |
@@ -72,3 +72,7 @@ jobs:
         run: |
           terraform apply -auto-approve \
             -var-file="env/${{ steps.env.outputs.env }}.tfvars"
+      
+      
+      - name: Print Environment
+        run: echo "Deploying to ${{ steps.env.outputs.env }}"
