@@ -932,3 +932,148 @@ START → Upload → Trigger → Execute → SUCCEEDED ✅
 - Retry & error handling  
 - Parallel workflows  
 - Output persistence (S3)  
+
+
+## 🚀 Step 7 — CI/CD Pipeline (Terraform + GitHub Actions)
+
+---
+
+### 🎯 Objective
+
+Automate infrastructure deployment using Terraform through GitHub Actions, enabling fully Git-driven deployments without manual intervention.
+
+---
+
+## ✅ CI/CD Workflow
+
+Code Push → GitHub Actions → Terraform → AWS Deployment
+
+---
+
+### ✅ Pipeline Execution Flow
+
+1. Developer pushes code to repository  
+2. Changes are promoted via:
+   feature → develop → release → main  
+3. Merge into `main` triggers GitHub Actions workflow  
+4. Workflow performs:
+   - Code checkout  
+   - AWS authentication  
+   - Lambda packaging  
+   - Terraform initialization  
+   - Terraform plan & apply  
+
+---
+
+## ✅ GitHub Actions Pipeline
+
+### 🔧 Workflow Steps
+
+- Checkout repository  
+- Configure AWS credentials (via GitHub Secrets)  
+- Package Lambda function  
+- Run `terraform init`  
+- Run `terraform plan`  
+- Run `terraform apply`  
+
+---
+
+## ✅ Lambda Build Automation
+
+Lambda package is generated dynamically inside the pipeline:
+
+    zip -r lambda.zip lambda_function.py
+
+---
+
+## ✅ Terraform Backend (State Management)
+
+Terraform state is stored remotely in an S3 bucket:
+
+- Bucket: 599626541533-ap-south-1-doc-summary-tf-state  
+- Key: terraform/state.tfstate  
+- Region: ap-south-1  
+
+---
+
+### ✅ Benefits of Remote State
+
+- Shared state across local and CI/CD environments  
+- Prevents duplicate resource creation  
+- Ensures consistency and reliability  
+- Enables team collaboration  
+
+---
+
+## ✅ Security
+
+AWS access is managed securely using GitHub Secrets:
+
+- AWS_ACCESS_KEY_ID  
+- AWS_SECRET_ACCESS_KEY  
+
+✔️ No credentials are hardcoded in the repository  
+
+---
+
+## ✅ Deployment Behavior
+
+- Changes are automatically deployed on push to `main`  
+- Terraform detects existing infrastructure via S3 state  
+- Only incremental updates are applied  
+
+---
+
+## ✅ End-to-End Architecture
+
+S3 Upload  
+↓  
+Lambda (Trigger)  
+↓  
+Step Function  
+↓  
+Lambda (Processor)  
+
+---
+
+## ✅ Automated Testing
+
+A test script validates the entire pipeline:
+
+- Uploads file to S3  
+- Triggers Step Function  
+- Tracks execution  
+- Logs results with run tracking  
+
+---
+
+### ✅ Logging
+
+Logs include:
+
+- Unique run ID  
+- Execution ARN  
+- Status tracking  
+- Input/output details  
+
+Stored at:
+
+test/log/s3_upload_sfn_log.txt
+
+---
+
+## ✅ Outcome
+
+- Fully automated infrastructure deployment  
+- Event-driven orchestration pipeline  
+- End-to-end test automation  
+- Production-ready DevOps workflow  
+
+---
+
+## 🔮 Next Enhancements
+
+- Multi-environment deployment (dev / prod)  
+- Terraform state locking (DynamoDB)  
+- CI/CD safety controls (plan vs apply)  
+- Enhanced error handling & retries  
