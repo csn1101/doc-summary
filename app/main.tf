@@ -89,7 +89,7 @@ resource "aws_lambda_function" "processor" {
   # ✅ ADD THIS BLOCK
   environment {
     variables = {
-      STEP_FN_ARN = aws_sfn_state_machine.summary_workflow.arn
+      STEP_FN_ARN = "arn:aws:states:${var.region}:${local.account_id}:stateMachine:${local.prefix}-workflow"
     }
   }
 
