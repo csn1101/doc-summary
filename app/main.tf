@@ -90,6 +90,7 @@ resource "aws_lambda_function" "processor" {
   environment {
     variables = {
       STEP_FN_ARN = "arn:aws:states:${var.region}:${local.account_id}:stateMachine:${local.prefix}-workflow"
+      OUTPUT_BUCKET = "${local.prefix}-output" 
     }
   }
 
@@ -103,6 +104,11 @@ resource "aws_s3_bucket_notification" "trigger" {
     lambda_function_arn = aws_lambda_function.processor.arn
     events              = ["s3:ObjectCreated:*"]
   }
+  
+  depends_on = [ 
+    aws_lambda_permission.allow_s3
+  ]
+
 }
 
 # ✅ S3 → Lambda permission
