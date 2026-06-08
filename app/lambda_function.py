@@ -1,9 +1,11 @@
 import json
 import boto3
+import os
 
 stepfn = boto3.client("stepfunctions")
 
-STATE_MACHINE_ARN = "arn:aws:states:ap-south-1:599626541533:stateMachine:doc-summary-workflow"
+STATE_MACHINE_ARN = os.environ["STEP_FN_ARN"]
+
 
 def lambda_handler(event, context):
     print("Received event:", json.dumps(event))
