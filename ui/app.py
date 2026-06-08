@@ -42,6 +42,11 @@ def get_latest_output():
 @app.route("/", methods=["GET", "POST"])
 def upload():
     result = None
+    loading = False
+
+    if request.method == "POST":
+        loading = True
+
 
     if request.method == "POST":
         file = request.files["file"]
@@ -58,7 +63,7 @@ def upload():
             # ✅ Fetch output
             result = get_latest_output()
 
-    return render_template("index.html", result=result)
+    return render_template("index.html", result=result, loading=loading)
 
 
 if __name__ == "__main__":
