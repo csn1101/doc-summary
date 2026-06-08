@@ -2,15 +2,17 @@ from flask import Flask, request, render_template
 import boto3
 import uuid
 import datetime
+import time
 
 app = Flask(__name__)
 
-# ✅ Change env if needed
 ENV = "dev"
+REGION = "ap-south-1"
 
-BUCKET_NAME = f"599626541533-ap-south-1-{ENV}-doc-summary-input"
+INPUT_BUCKET = f"599626541533-{REGION}-{ENV}-doc-summary-input"
+OUTPUT_BUCKET = f"599626541533-{REGION}-{ENV}-doc-summary-output"
 
-s3 = boto3.client("s3")
+s3 = boto3.client("s3", region_name=REGION)
 
 
 def generate_key(filename):
@@ -19,18 +21,44 @@ def generate_key(filename):
     return f"{timestamp}-{uid}-{filename}"
 
 
+def get_latest_output():
+    response = s3.list_objects_v2(Bucket=OUTPUT_BUCKET)
+
+    if "Contents" not in response:
+        return "⚠️ No output found yet"
+
+    # Sort by latest file
+    latest = sorted(
+        response["Contents"],
+        key=lambda x: x["LastModified"]
+    )[-1]["Key"]
+
+    obj = s3.get_object(Bucket=OUTPUT_BUCKET, Key=latest)
+    content = obj["Body"].read().decode("utf-8")
+
+    return content
+
+
 @app.route("/", methods=["GET", "POST"])
 def upload():
+    result = None
+
     if request.method == "POST":
         file = request.files["file"]
 
         if file:
             key = generate_key(file.filename)
-            s3.upload_fileobj(file, BUCKET_NAME, key)
 
-            return f"✅ Uploaded to S3:<br>s3://{BUCKET_NAME}/{key}"
+            # ✅ Upload file
+            s3.upload_fileobj(file, INPUT_BUCKET, key)
 
-    return render_template("index.html")
+            # ✅ Give pipeline some time to process
+            time.sleep(5)
+
+            # ✅ Fetch output
+            result = get_latest_output()
+
+    return render_template("index.html", result=result)
 
 
 if __name__ == "__main__":
