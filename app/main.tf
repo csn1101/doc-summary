@@ -85,6 +85,14 @@ resource "aws_lambda_function" "processor" {
 
   filename         = "lambda.zip"
   source_code_hash = filebase64sha256("lambda.zip")
+  
+  # ✅ ADD THIS BLOCK
+  environment {
+    variables = {
+      STEP_FN_ARN = "arn:aws:states:${var.region}:${local.account_id}:stateMachine:${local.prefix}-workflow"
+    }
+  }
+
 }
 
 # ✅ S3 Trigger
